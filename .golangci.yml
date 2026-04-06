@@ -1,0 +1,15 @@
+version: "2"
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+  settings:
+    errcheck:
+      check-type-assertions: true
+  exclusions:
+    paths:
+      - internal/garage/client.gen.go

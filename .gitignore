@@ -1,0 +1,26 @@
+# Build output
+terraform-provider-garage
+*.exe
+
+# Go
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+
+# Generated docs are committed, but mark for awareness
+# docs/resources/
+# docs/data-sources/

@@ -1,0 +1,36 @@
+---
+page_title: "garage Provider"
+description: |-
+  Manage Garage S3-compatible object storage via the Admin API.
+---
+
+# garage Provider
+
+The garage provider allows you to manage [Garage](https://garagehq.deuxfleurs.fr/)
+S3-compatible object storage resources via the Admin API (v2).
+
+It supports managing buckets, access keys, permissions, cluster layout, and admin
+tokens declaratively through Terraform configuration.
+
+## Authentication
+
+The provider requires an admin API token. Configure it via the provider block
+or the `GARAGE_TOKEN` environment variable:
+
+```hcl
+# Via provider block
+provider "garage" {
+  endpoint = "http://garage.example.com:3903"
+  token    = var.garage_admin_token
+}
+
+# Or via environment variables
+# export GARAGE_ENDPOINT=http://garage.example.com:3903
+# export GARAGE_TOKEN=your-admin-token
+```
+
+## Example Usage
+
+{{ tffile "examples/provider/provider.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}
