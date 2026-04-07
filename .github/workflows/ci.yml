@@ -54,9 +54,9 @@ jobs:
             http://localhost:3903/v2/GetClusterStatus | jq -r '.nodes[] | select(.isUp) | .id')
           echo "Node ID: $NODE_ID"
           # Assign the node to a zone with 1GB capacity
-          curl -sf -X POST -H "Authorization: Bearer test-admin-token" \
+          curl -v -X POST -H "Authorization: Bearer test-admin-token" \
             -H "Content-Type: application/json" \
-            -d "[{\"id\": \"$NODE_ID\", \"zone\": \"dc1\", \"capacity\": 1073741824}]" \
+            -d "{\"roles\": [{\"id\": \"$NODE_ID\", \"zone\": \"dc1\", \"capacity\": 1073741824, \"tags\": []}]}" \
             http://localhost:3903/v2/UpdateClusterLayout
           # Apply the layout
           LAYOUT_VERSION=$(curl -sf -H "Authorization: Bearer test-admin-token" \
