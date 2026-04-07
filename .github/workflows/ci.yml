@@ -36,7 +36,36 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Start Garage
-        run: docker compose -f testdata/docker-compose.yml up -d --wait
+        run: docker compose -f testdata/docker-compose.yml up -d
+      - name: Wait for Garage admin API
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3903/health; then
+              echo "Garage admin API is ready"
+              break
+            fi
+            echo "Waiting for Garage... ($i/30)"
+            sleep 2
+          done
+      - name: Configure Garage layout
+        run: |
+          # Get the node ID from the status endpoint
+          NODE_ID=$(curl -sf -H "Authorization: Bearer test-admin-token" \
+            http://localhost:3903/v2/GetClusterStatus | jq -r '.nodes[] | select(.isUp) | .id')
+          echo "Node ID: $NODE_ID"
+          # Assign the node to a zone with 1GB capacity
+          curl -sf -X POST -H "Authorization: Bearer test-admin-token" \
+            -H "Content-Type: application/json" \
+            -d "[{\"id\": \"$NODE_ID\", \"zone\": \"dc1\", \"capacity\": 1073741824}]" \
+            http://localhost:3903/v2/UpdateClusterLayout
+          # Apply the layout
+          LAYOUT_VERSION=$(curl -sf -H "Authorization: Bearer test-admin-token" \
+            http://localhost:3903/v2/GetClusterLayout | jq '.version + 1')
+          curl -sf -X POST -H "Authorization: Bearer test-admin-token" \
+            -H "Content-Type: application/json" \
+            -d "{\"version\": $LAYOUT_VERSION}" \
+            http://localhost:3903/v2/ApplyClusterLayout
+          echo "Layout applied successfully"
       - name: Run acceptance tests
         run: go test ./... -v -count=1 -timeout 30m -race
         env:
