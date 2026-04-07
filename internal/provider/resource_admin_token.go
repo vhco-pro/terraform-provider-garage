@@ -136,7 +136,7 @@ func (r *AdminTokenResource) Create(ctx context.Context, req resource.CreateRequ
 		Scope: &scope,
 	}
 
-	if !plan.Expiration.IsNull() {
+	if !plan.Expiration.IsNull() && !plan.Expiration.IsUnknown() {
 		t, err := time.Parse(time.RFC3339, plan.Expiration.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError("Invalid expiration format", err.Error())
@@ -144,7 +144,7 @@ func (r *AdminTokenResource) Create(ctx context.Context, req resource.CreateRequ
 		}
 		createBody.Expiration = &t
 	}
-	if !plan.NeverExpires.IsNull() && plan.NeverExpires.ValueBool() {
+	if !plan.NeverExpires.IsNull() && !plan.NeverExpires.IsUnknown() && plan.NeverExpires.ValueBool() {
 		ne := true
 		createBody.NeverExpires = &ne
 	}
@@ -258,7 +258,7 @@ func (r *AdminTokenResource) Update(ctx context.Context, req resource.UpdateRequ
 		Scope: &scope,
 	}
 
-	if !plan.Expiration.IsNull() {
+	if !plan.Expiration.IsNull() && !plan.Expiration.IsUnknown() {
 		t, err := time.Parse(time.RFC3339, plan.Expiration.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError("Invalid expiration format", err.Error())
@@ -266,7 +266,7 @@ func (r *AdminTokenResource) Update(ctx context.Context, req resource.UpdateRequ
 		}
 		updateBody.Expiration = &t
 	}
-	if !plan.NeverExpires.IsNull() && plan.NeverExpires.ValueBool() {
+	if !plan.NeverExpires.IsNull() && !plan.NeverExpires.IsUnknown() && plan.NeverExpires.ValueBool() {
 		ne := true
 		updateBody.NeverExpires = &ne
 	}

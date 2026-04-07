@@ -142,13 +142,13 @@ func (r *KeyResource) Create(ctx context.Context, req resource.CreateRequest, re
 
 	var key *garage.GetKeyInfoResponse
 
-	if !plan.ID.IsNull() && !plan.SecretAccessKey.IsNull() {
+	if !plan.ID.IsNull() && !plan.ID.IsUnknown() && !plan.SecretAccessKey.IsNull() && !plan.SecretAccessKey.IsUnknown() {
 		// Import predefined key
 		importBody := garage.ImportKeyRequest{
 			AccessKeyId:    plan.ID.ValueString(),
 			SecretAccessKey: plan.SecretAccessKey.ValueString(),
 		}
-		if !plan.Name.IsNull() {
+		if !plan.Name.IsNull() && !plan.Name.IsUnknown() {
 			name := plan.Name.ValueString()
 			importBody.Name = &name
 		}
@@ -166,7 +166,7 @@ func (r *KeyResource) Create(ctx context.Context, req resource.CreateRequest, re
 	} else {
 		// Create new key
 		createBody := garage.CreateKeyJSONRequestBody{}
-		if !plan.Name.IsNull() {
+		if !plan.Name.IsNull() && !plan.Name.IsUnknown() {
 			name := plan.Name.ValueString()
 			createBody.Name = &name
 		}
@@ -192,12 +192,12 @@ func (r *KeyResource) Create(ctx context.Context, req resource.CreateRequest, re
 	needsUpdate := false
 	updateBody := garage.UpdateKeyRequestBody{}
 
-	if !plan.Name.IsNull() {
+	if !plan.Name.IsNull() && !plan.Name.IsUnknown() {
 		name := plan.Name.ValueString()
 		updateBody.Name = &name
 		needsUpdate = true
 	}
-	if !plan.Expiration.IsNull() {
+	if !plan.Expiration.IsNull() && !plan.Expiration.IsUnknown() {
 		t, err := time.Parse(time.RFC3339, plan.Expiration.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError("Invalid expiration format", err.Error())
@@ -206,12 +206,12 @@ func (r *KeyResource) Create(ctx context.Context, req resource.CreateRequest, re
 		updateBody.Expiration = &t
 		needsUpdate = true
 	}
-	if !plan.NeverExpires.IsNull() && plan.NeverExpires.ValueBool() {
+	if !plan.NeverExpires.IsNull() && !plan.NeverExpires.IsUnknown() && plan.NeverExpires.ValueBool() {
 		ne := true
 		updateBody.NeverExpires = &ne
 		needsUpdate = true
 	}
-	if !plan.CreateBucket.IsNull() {
+	if !plan.CreateBucket.IsNull() && !plan.CreateBucket.IsUnknown() {
 		cb := plan.CreateBucket.ValueBool()
 		if cb {
 			updateBody.Allow = &garage.KeyPerm{CreateBucket: &cb}
@@ -288,11 +288,11 @@ func (r *KeyResource) Update(ctx context.Context, req resource.UpdateRequest, re
 
 	updateBody := garage.UpdateKeyRequestBody{}
 
-	if !plan.Name.IsNull() {
+	if !plan.Name.IsNull() && !plan.Name.IsUnknown() {
 		name := plan.Name.ValueString()
 		updateBody.Name = &name
 	}
-	if !plan.Expiration.IsNull() {
+	if !plan.Expiration.IsNull() && !plan.Expiration.IsUnknown() {
 		t, err := time.Parse(time.RFC3339, plan.Expiration.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError("Invalid expiration format", err.Error())
@@ -300,11 +300,11 @@ func (r *KeyResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		}
 		updateBody.Expiration = &t
 	}
-	if !plan.NeverExpires.IsNull() && plan.NeverExpires.ValueBool() {
+	if !plan.NeverExpires.IsNull() && !plan.NeverExpires.IsUnknown() && plan.NeverExpires.ValueBool() {
 		ne := true
 		updateBody.NeverExpires = &ne
 	}
-	if !plan.CreateBucket.IsNull() {
+	if !plan.CreateBucket.IsNull() && !plan.CreateBucket.IsUnknown() {
 		cb := plan.CreateBucket.ValueBool()
 		ncb := !cb
 		if cb {

@@ -191,7 +191,7 @@ func (r *BucketResource) Create(ctx context.Context, req resource.CreateRequest,
 	needsUpdate := false
 	updateBody := garage.UpdateBucketRequestBody{}
 
-	if !plan.WebsiteAccess.IsNull() && plan.WebsiteAccess.ValueBool() {
+	if !plan.WebsiteAccess.IsNull() && !plan.WebsiteAccess.IsUnknown() && plan.WebsiteAccess.ValueBool() {
 		needsUpdate = true
 		websiteAccess := garage.UpdateBucketWebsiteAccess{
 			Enabled: true,
@@ -207,14 +207,14 @@ func (r *BucketResource) Create(ctx context.Context, req resource.CreateRequest,
 		updateBody.WebsiteAccess = &websiteAccess
 	}
 
-	if !plan.MaxSize.IsNull() || !plan.MaxObjects.IsNull() {
+	if (!plan.MaxSize.IsNull() && !plan.MaxSize.IsUnknown()) || (!plan.MaxObjects.IsNull() && !plan.MaxObjects.IsUnknown()) {
 		needsUpdate = true
 		quotas := garage.ApiBucketQuotas{}
-		if !plan.MaxSize.IsNull() {
+		if !plan.MaxSize.IsNull() && !plan.MaxSize.IsUnknown() {
 			v := plan.MaxSize.ValueInt64()
 			quotas.MaxSize = &v
 		}
-		if !plan.MaxObjects.IsNull() {
+		if !plan.MaxObjects.IsNull() && !plan.MaxObjects.IsUnknown() {
 			v := plan.MaxObjects.ValueInt64()
 			quotas.MaxObjects = &v
 		}
@@ -300,11 +300,11 @@ func (r *BucketResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	// Quotas
 	quotas := garage.ApiBucketQuotas{}
-	if !plan.MaxSize.IsNull() {
+	if !plan.MaxSize.IsNull() && !plan.MaxSize.IsUnknown() {
 		v := plan.MaxSize.ValueInt64()
 		quotas.MaxSize = &v
 	}
-	if !plan.MaxObjects.IsNull() {
+	if !plan.MaxObjects.IsNull() && !plan.MaxObjects.IsUnknown() {
 		v := plan.MaxObjects.ValueInt64()
 		quotas.MaxObjects = &v
 	}
