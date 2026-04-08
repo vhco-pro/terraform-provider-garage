@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -100,9 +100,7 @@ func (r *BucketResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Description: "Whether website access is enabled.",
 				Optional:    true,
 				Computed:    true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-				},
+				Default:     booldefault.StaticBool(false),
 			},
 			"index_document": schema.StringAttribute{
 				Description: "Index document for website access.",
@@ -282,16 +280,17 @@ func (r *BucketResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	updateBody := garage.UpdateBucketRequestBody{}
 
-	// Website config
+	// Website config — always send to ensure toggling works
+	websiteEnabled := plan.WebsiteAccess.ValueBool()
 	websiteAccess := garage.UpdateBucketWebsiteAccess{
-		Enabled: plan.WebsiteAccess.ValueBool(),
+		Enabled: websiteEnabled,
 	}
-	if plan.WebsiteAccess.ValueBool() {
-		if !plan.IndexDocument.IsNull() {
+	if websiteEnabled {
+		if !plan.IndexDocument.IsNull() && !plan.IndexDocument.IsUnknown() {
 			idx := plan.IndexDocument.ValueString()
 			websiteAccess.IndexDocument = &idx
 		}
-		if !plan.ErrorDocument.IsNull() {
+		if !plan.ErrorDocument.IsNull() && !plan.ErrorDocument.IsUnknown() {
 			errDoc := plan.ErrorDocument.ValueString()
 			websiteAccess.ErrorDocument = &errDoc
 		}

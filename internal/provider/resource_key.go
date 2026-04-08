@@ -29,14 +29,14 @@ type KeyResource struct {
 }
 
 type KeyResourceModel struct {
-	ID             types.String `tfsdk:"id"`
+	ID              types.String `tfsdk:"id"`
 	SecretAccessKey types.String `tfsdk:"secret_access_key"`
-	Name           types.String `tfsdk:"name"`
-	Expiration     types.String `tfsdk:"expiration"`
-	NeverExpires   types.Bool   `tfsdk:"never_expires"`
-	Expired        types.Bool   `tfsdk:"expired"`
-	Created        types.String `tfsdk:"created"`
-	CreateBucket   types.Bool   `tfsdk:"create_bucket"`
+	Name            types.String `tfsdk:"name"`
+	Expiration      types.String `tfsdk:"expiration"`
+	NeverExpires    types.Bool   `tfsdk:"never_expires"`
+	Expired         types.Bool   `tfsdk:"expired"`
+	Created         types.String `tfsdk:"created"`
+	CreateBucket    types.Bool   `tfsdk:"create_bucket"`
 }
 
 func NewKeyResource() resource.Resource {
@@ -145,7 +145,7 @@ func (r *KeyResource) Create(ctx context.Context, req resource.CreateRequest, re
 	if !plan.ID.IsNull() && !plan.ID.IsUnknown() && !plan.SecretAccessKey.IsNull() && !plan.SecretAccessKey.IsUnknown() {
 		// Import predefined key
 		importBody := garage.ImportKeyRequest{
-			AccessKeyId:    plan.ID.ValueString(),
+			AccessKeyId:     plan.ID.ValueString(),
 			SecretAccessKey: plan.SecretAccessKey.ValueString(),
 		}
 		if !plan.Name.IsNull() && !plan.Name.IsUnknown() {
