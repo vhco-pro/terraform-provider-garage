@@ -1144,6 +1144,7 @@ root_domain = ".s3.garage.localhost"
 
 [admin]
 api_bind_addr = "0.0.0.0:3903"
+# checkov:skip=CKV_SECRET_6: example token not used
 admin_token = "test-admin-token"
 ```
 

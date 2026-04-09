@@ -71,6 +71,7 @@ jobs:
         env:
           TF_ACC: "1"
           GARAGE_ENDPOINT: http://localhost:3903
+          # checkov:skip=CKV_SECRET_6: test token for CI
           GARAGE_TOKEN: test-admin-token
       - name: Garage logs
         if: failure()

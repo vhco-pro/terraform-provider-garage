@@ -34,7 +34,7 @@ The Garage ecosystem needs a production-quality Terraform provider. There are 11
 
 **Bottom line:** No competitor uses plugin-framework, none have proper project structure, none have acceptance tests, none have generated API clients, and none cover layout or admin tokens. The market is wide open.
 
-See: [Existing provider analysis](../research/terraform-provider-analysis.md) | [ADR-006](../decisions/ADR-006-terraform-provider-scope.md)
+See: [Existing provider analysis](../research/terraform-provider-analysis.md) | [ADR-001](../decisions/ADR-001-terraform-provider-scope.md)
 
 This provider will deliver:
 

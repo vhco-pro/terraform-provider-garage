@@ -14,7 +14,7 @@ This plan covers bootstrapping the `terraform-provider-garage` Go module and gen
 
 ## Context
 
-Per [ADR-006](../decisions/ADR-006-terraform-provider-scope.md), the provider is a standalone Go module that can be exported to its own repository. The API client is generated from the vendored OpenAPI spec using oapi-codegen — the same approach as the operator. The [existing provider](../research/terraform-provider-analysis.md) uses a hand-rolled client with no timeouts, no retries, and no URL encoding. We fix all of this at the foundation level.
+Per [ADR-001](../decisions/ADR-001-terraform-provider-scope.md), the provider is a standalone Go module that can be exported to its own repository. The API client is generated from the vendored OpenAPI spec using oapi-codegen — the same approach as the operator. The [existing provider](../research/terraform-provider-analysis.md) uses a hand-rolled client with no timeouts, no retries, and no URL encoding. We fix all of this at the foundation level.
 
 ## Scope
 

@@ -658,6 +658,7 @@ type GetClusterStatusResponse struct {
 }
 
 // GetCurrentAdminTokenInfoResponse defines model for GetCurrentAdminTokenInfoResponse.
+// checkov:skip=CKV_SECRET_6: incorrect flag
 type GetCurrentAdminTokenInfoResponse = GetAdminTokenInfoResponse
 
 // GetKeyInfoResponse defines model for GetKeyInfoResponse.
@@ -1545,6 +1546,7 @@ type ClusterLayoutSkipDeadNodesJSONRequestBody = ClusterLayoutSkipDeadNodesReque
 type ConnectClusterNodesJSONRequestBody = ConnectClusterNodesRequest
 
 // CreateAdminTokenJSONRequestBody defines body for CreateAdminToken for application/json ContentType.
+// checkov:skip=CKV_SECRET_6: false positive
 type CreateAdminTokenJSONRequestBody = UpdateAdminTokenRequestBody
 
 // CreateBucketJSONRequestBody defines body for CreateBucket for application/json ContentType.

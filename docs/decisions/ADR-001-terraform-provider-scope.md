@@ -5,7 +5,7 @@ date: 2025-07-24
 author: "garage-operator team"
 ---
 
-# ADR-006: Terraform Provider Scope and Module Strategy
+# ADR-001: Terraform Provider Scope and Module Strategy
 
 ## Status
 
