@@ -3,13 +3,13 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -99,9 +99,6 @@ func (r *LayoutNodeResource) Schema(_ context.Context, _ resource.SchemaRequest,
 			"layout_version": schema.Int64Attribute{
 				Description: "Layout version after the last apply.",
 				Computed:    true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
 			},
 		},
 	}
@@ -208,6 +205,20 @@ func (r *LayoutNodeResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 	_, err := r.stageAndApply(ctx, state.NodeID.ValueString(), "", types.Int64Null(), nil, true)
 	if err != nil {
+		// If Garage rejects the removal because it would violate the replication
+		// factor (e.g., removing the last node), revert the staged change and
+		// let Terraform remove the resource from state with a warning.
+		if strings.Contains(err.Error(), "smaller than the replication factor") {
+			// Revert any staged layout change
+			_, _ = r.client.Inner().RevertClusterLayoutWithResponse(ctx)
+			resp.Diagnostics.AddWarning(
+				"Layout node not physically removed",
+				fmt.Sprintf("Garage rejected the removal because it would violate the replication factor. "+
+					"The node remains in the cluster layout but has been removed from Terraform state. "+
+					"Original error: %s", err.Error()),
+			)
+			return
+		}
 		resp.Diagnostics.AddError("Error removing layout node", err.Error())
 	}
 }
