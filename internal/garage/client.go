@@ -125,6 +125,8 @@ func Classify(statusCode int) ErrorKind {
 }
 
 // ClassifyError returns the ErrorKind for a Go error (network errors, DNS, timeouts).
+// Unknown network errors are classified as transient since they typically indicate
+// temporary connectivity issues that may resolve on retry.
 func ClassifyError(err error) ErrorKind {
 	if err == nil {
 		return ErrorKindUnknown
@@ -147,7 +149,8 @@ func ClassifyError(err error) ErrorKind {
 		}
 	}
 
-	return ErrorKindUnknown
+	// Network errors not matching known patterns are still likely transient.
+	return ErrorKindTransient
 }
 
 func stringContains(s, substr string) bool {

@@ -220,7 +220,7 @@ func TestClassifyError(t *testing.T) {
 		{"dns error", fmt.Errorf("dial tcp: lookup no-such-host: no such host"), ErrorKindTransient},
 		{"io timeout", fmt.Errorf("net/http: i/o timeout"), ErrorKindTransient},
 		{"eof", fmt.Errorf("unexpected EOF"), ErrorKindTransient},
-		{"unknown error", fmt.Errorf("some random error"), ErrorKindUnknown},
+		{"unknown error", fmt.Errorf("some random error"), ErrorKindTransient},
 	}
 
 	for _, tt := range tests {
