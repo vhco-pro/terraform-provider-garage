@@ -50,10 +50,31 @@ release:
   draft: false
   prerelease: auto
 
+snapshot:
+  version_template: '{{ incpatch .Version }}'
+
 changelog:
+  use: git
   sort: asc
   filters:
-    exclude:
+    include:
+      - "^feat:"
+      - "^fix:"
+      - "^chore:"
       - "^docs:"
-      - "^test:"
-      - "^ci:"
+  groups:
+    - title: '🛠 Dependency updates'
+      regexp: '^fix\(deps\):|^feat\(deps\):'
+      order: 300
+    - title: '✨ New Features'
+      regexp: '^feat(\([^)]*\))?:'
+      order: 100
+    - title: '🐛 Bug fixes'
+      regexp: '^fix(\([^)]*\))?:'
+      order: 200
+    - title: '📖 Documentation updates'
+      regexp: '^docs(\([^)]*\))?:'
+      order: 400
+    - title: '📦 Other work'
+      regexp: '^chore(\([^)]*\))?:|^chore:'
+      order: 9999
