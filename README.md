@@ -23,20 +23,29 @@ The endpoint and token can also be set via `GARAGE_ENDPOINT` and `GARAGE_TOKEN` 
 
 ## Resources
 
-- `garage_bucket` — S3 bucket
-- `garage_key` — API access key
-- `garage_bucket_alias` — global or local bucket alias
-- `garage_bucket_permission` — key-to-bucket permission grant
-- `garage_layout_node` — cluster layout node assignment
-- `garage_admin_token` — admin API token
+| Resource | Description |
+|---|---|
+| `garage_bucket` | S3 bucket |
+| `garage_key` | API access key |
+| `garage_bucket_alias` | Global or local bucket alias |
+| `garage_bucket_permission` | Key-to-bucket permission grant |
+| `garage_layout_node` | Cluster layout node assignment |
+| `garage_admin_token` | Admin API token |
 
 ## Data Sources
 
-- `garage_bucket` / `garage_buckets`
-- `garage_key` / `garage_keys`
-- `garage_cluster_status` / `garage_cluster_health` / `garage_cluster_layout`
-- `garage_node_info`
-- `garage_admin_token` / `garage_admin_tokens`
+| Data Source | Description |
+|---|---|
+| `garage_bucket` | Look up a single bucket |
+| `garage_buckets` | List all buckets |
+| `garage_key` | Look up a single access key |
+| `garage_keys` | List all access keys |
+| `garage_cluster_status` | Cluster status |
+| `garage_cluster_health` | Cluster health |
+| `garage_cluster_layout` | Cluster layout |
+| `garage_node_info` | Node info |
+| `garage_admin_token` | Look up a single admin token |
+| `garage_admin_tokens` | List all admin tokens |
 
 ## Development
 
