@@ -22,18 +22,16 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
-
       - name: Tag with GitVersion
         id: gitversion
         uses: michielvha/gitversion-tag-action@main
         with:
           configFilePath: gitversion.yml
+          prefix: 'v'
 
       - name: Build and Release
         uses: michielvha/goreleaser-action@main
         with:
+          go-version: '1.26.1'
           github-token: ${{ github.token }}
           pgp-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
