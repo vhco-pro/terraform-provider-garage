@@ -24,3 +24,6 @@ crash.log
 # Generated docs are committed, but mark for awareness
 # docs/resources/
 # docs/data-sources/
+
+# GPG keys (sensitive)
+.gpg/
