@@ -275,7 +275,10 @@ func TestNewGarageClient_AuthHeader(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := NewGarageClient(srv.URL, "my-secret-token")
+	client, err := NewGarageClient(srv.URL, "my-secret-token",
+		WithMaxRetries(0),
+		WithRetryWait(0, 0),
+	)
 	if err != nil {
 		t.Fatalf("NewGarageClient: %v", err)
 	}
