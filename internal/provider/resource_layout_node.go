@@ -243,24 +243,7 @@ func (r *LayoutNodeResource) stageAndApply(ctx context.Context, nodeID, zone str
 		currentVersion := layoutResp.JSON200.Version
 
 		// Stage the change
-		var roleChange garage.NodeRoleChangeRequest
-		if remove {
-			err = roleChange.FromNodeRoleChangeRequest0(garage.NodeRoleChangeRequest0{
-				Id:     nodeID,
-				Remove: true,
-			})
-		} else {
-			req1 := garage.NodeRoleChangeRequest1{
-				Id:   nodeID,
-				Zone: zone,
-				Tags: tags,
-			}
-			if !capacity.IsNull() {
-				v := capacity.ValueInt64()
-				req1.Capacity = &v
-			}
-			err = roleChange.FromNodeRoleChangeRequest1(req1)
-		}
+		roleChange, err := buildRoleChange(nodeID, zone, capacity, tags, remove)
 		if err != nil {
 			return 0, fmt.Errorf("constructing role change: %w", err)
 		}
@@ -300,4 +283,42 @@ func (r *LayoutNodeResource) stageAndApply(ctx context.Context, nodeID, zone str
 	}
 
 	return 0, fmt.Errorf("layout apply failed after %d retries due to version conflicts", layoutMaxRetries)
+}
+
+// buildRoleChange constructs the NodeRoleChangeRequest payload sent to
+// Garage's UpdateClusterLayout endpoint.
+//
+// The Garage Admin API's NodeAssignedRole schema declares `tags` as a required
+// array (see internal/garage/openapi/spec.json). A nil Go slice marshals to
+// JSON null, which Garage rejects with 400 Bad Request — see issue #1. Always
+// normalize nil tags to an empty slice so the wire payload contains
+// `"tags": []`.
+func buildRoleChange(nodeID, zone string, capacity types.Int64, tags []string, remove bool) (garage.NodeRoleChangeRequest, error) {
+	var rc garage.NodeRoleChangeRequest
+	if remove {
+		if err := rc.FromNodeRoleChangeRequest0(garage.NodeRoleChangeRequest0{
+			Id:     nodeID,
+			Remove: true,
+		}); err != nil {
+			return rc, err
+		}
+		return rc, nil
+	}
+
+	if tags == nil {
+		tags = []string{}
+	}
+	req1 := garage.NodeRoleChangeRequest1{
+		Id:   nodeID,
+		Zone: zone,
+		Tags: tags,
+	}
+	if !capacity.IsNull() {
+		v := capacity.ValueInt64()
+		req1.Capacity = &v
+	}
+	if err := rc.FromNodeRoleChangeRequest1(req1); err != nil {
+		return rc, err
+	}
+	return rc, nil
 }

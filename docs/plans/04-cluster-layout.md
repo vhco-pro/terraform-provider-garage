@@ -1,6 +1,6 @@
 ---
 status: done
-status_description: "Fully implemented. resource_layout_node.go (two-phase stage+apply with version conflict retry), datasource_cluster_layout.go, datasource_cluster_health.go, datasource_cluster_status.go, datasource_node_info.go (MultiResponse handling). Build and lint clean."
+status_description: "Fully implemented. resource_layout_node.go (two-phase stage+apply with version conflict retry), datasource_cluster_layout.go, datasource_cluster_health.go, datasource_cluster_status.go, datasource_node_info.go (MultiResponse handling). Build and lint clean. Known follow-ups tracked in addenda (see end of doc)."
 description: "Implement garage_layout_node resource and cluster data sources (health, status, layout, node info)"
 author: "garage-operator team"
 goal: "Cluster layout management and observability through Terraform"
@@ -391,3 +391,11 @@ See [Plan 06 — Testing Strategy](06-testing.md) for complete test definitions.
 2. **Node ID format** — Validate `^[0-9a-f]{64}$` (64 hex chars). Garage consistently uses this format. Strict validation catches typos at plan time.
 3. **Layout apply failure recovery** — If stage succeeds but apply fails, the staged changes are left pending. The provider reports the error clearly: "Layout staged but apply failed. Run `terraform apply` again or use Garage CLI to revert staged changes." No automatic revert.
 4. **Multi-node endpoints** — `GetNodeInfo` returns a `MultiResponse` with `success` (map of node_id → node info) and `error` (map of node_id → error message). The data source accepts an optional `node_id` input. If provided, it filters to that node from `success` (errors if in the `error` map). If omitted, it returns all nodes from `success`, logging warnings for nodes in the `error` map.
+
+## Addenda / Known Issues
+
+### A1 — `tags` omitted in HCL caused 400 Bad Request (fixed)
+
+Reported in [vhco-pro/terraform-provider-garage#1](https://github.com/vhco-pro/terraform-provider-garage/issues/1). The `Create`/`Update` paths sent `"tags": null` when the optional `tags` attribute was omitted, which violates the Garage Admin API's `NodeAssignedRole` schema (`tags` is a required array). Garage rejected the staged change with `400 Bad Request`.
+
+Fix and regression coverage are tracked in [Plan 08 — Fix `garage_layout_node` nil `tags`](08-fix-layout-node-nil-tags.md).
