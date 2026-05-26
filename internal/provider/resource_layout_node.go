@@ -157,9 +157,17 @@ func (r *LayoutNodeResource) Read(ctx context.Context, req resource.ReadRequest,
 			} else {
 				state.Capacity = types.Int64Null()
 			}
-			tagList, diags := types.ListValueFrom(ctx, types.StringType, role.Tags)
-			resp.Diagnostics.Append(diags...)
-			state.Tags = tagList
+			// Preserve the user's null-vs-empty intent for tags. Garage always
+			// returns a (possibly empty) array, but if the prior state had a
+			// null tags value (HCL omitted the attribute), refreshing to an
+			// empty list would cause spurious "tags = [] -> null" diffs.
+			if len(role.Tags) == 0 && state.Tags.IsNull() {
+				// keep state.Tags as null
+			} else {
+				tagList, diags := types.ListValueFrom(ctx, types.StringType, role.Tags)
+				resp.Diagnostics.Append(diags...)
+				state.Tags = tagList
+			}
 			state.LayoutVersion = types.Int64Value(layoutResp.JSON200.Version)
 			resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 			return
