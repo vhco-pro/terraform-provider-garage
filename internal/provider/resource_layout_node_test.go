@@ -84,3 +84,45 @@ resource "garage_layout_node" "test" {
 }
 `, zone, capacity, tagsHCL)
 }
+
+// testAccLayoutNodeConfigOmittedTags returns a config that omits the optional
+// tags attribute entirely. Regression coverage for
+// https://github.com/vhco-pro/terraform-provider-garage/issues/1 — without
+// the fix this triggers "staging layout change: unexpected status 400 Bad
+// Request" because tags marshal to JSON null.
+func testAccLayoutNodeConfigOmittedTags(zone string, capacity int64) string {
+	return fmt.Sprintf(`
+data "garage_cluster_status" "current" {}
+
+resource "garage_layout_node" "test" {
+  node_id  = data.garage_cluster_status.current.nodes[0].id
+  zone     = %[1]q
+  capacity = %[2]d
+}
+`, zone, capacity)
+}
+
+// TestAccLayoutNode_omittedTags confirms that omitting the optional `tags`
+// attribute from HCL succeeds. Regression test for issue #1.
+func TestAccLayoutNode_omittedTags(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		CheckDestroy: func(s *terraform.State) error {
+			// Single-node cluster: the last node cannot be removed.
+			return nil
+		},
+		Steps: []resource.TestStep{
+			{
+				Config: testAccLayoutNodeConfigOmittedTags("dc1", 1073741824),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("garage_layout_node.test", "id"),
+					resource.TestCheckResourceAttr("garage_layout_node.test", "zone", "dc1"),
+					resource.TestCheckResourceAttr("garage_layout_node.test", "capacity", "1073741824"),
+					resource.TestCheckResourceAttr("garage_layout_node.test", "tags.#", "0"),
+					resource.TestCheckResourceAttrSet("garage_layout_node.test", "layout_version"),
+				),
+			},
+		},
+	})
+}
