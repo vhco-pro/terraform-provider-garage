@@ -1,37 +1,17 @@
 name: Release
 
-permissions:
-  contents: write
-
+# Started by the exact tag the App pushed in ci.yml, or by a tag pushed by hand.
+# Needs: GPG_PRIVATE_KEY (secret), the key registered with the Terraform Registry.
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - 'README.md'
-      - '.gitignore'
-      - 'docs/**'
-  workflow_dispatch:
+    tags: ['v*.*.*']
+
+permissions: {}
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Tag with GitVersion
-        id: gitversion
-        uses: michielvha/gitversion-tag-action@8cf5869816cf71437052ac97d086e00526bf2d89 # v7.0.4
-        with:
-          configFilePath: gitversion.yml
-          prefix: 'v'
-
-      - name: Build and Release
-        uses: michielvha/goreleaser-action@a86fcdf453812a9d69b85208c0cb6a1e73f136b8 # v1
-        with:
-          go-version: '1.26.1'
-          github-token: ${{ github.token }}
-          pgp-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+    permissions:
+      contents: write
+    uses: vhco-pro/go-release-workflow/.github/workflows/go-release.yml@311467ed4ba150944298460af16497abad8b7a69 # v0.1.0
+    secrets:
+      pgp-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
