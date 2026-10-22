@@ -24,21 +24,21 @@ type BucketDataSource struct {
 }
 
 type BucketDataSourceModel struct {
-	ID            types.String `tfsdk:"id"`
-	GlobalAlias   types.String `tfsdk:"global_alias"`
-	Created       types.String `tfsdk:"created"`
-	WebsiteAccess types.Bool   `tfsdk:"website_access"`
-	IndexDocument types.String `tfsdk:"index_document"`
-	ErrorDocument types.String `tfsdk:"error_document"`
-	MaxSize       types.Int64  `tfsdk:"max_size"`
-	MaxObjects    types.Int64  `tfsdk:"max_objects"`
-	Objects       types.Int64  `tfsdk:"objects"`
-	Bytes         types.Int64  `tfsdk:"bytes"`
-	UnfinishedUploads              types.Int64 `tfsdk:"unfinished_uploads"`
-	UnfinishedMultipartUploads     types.Int64 `tfsdk:"unfinished_multipart_uploads"`
-	UnfinishedMultipartUploadParts types.Int64 `tfsdk:"unfinished_multipart_upload_parts"`
-	UnfinishedMultipartUploadBytes types.Int64 `tfsdk:"unfinished_multipart_upload_bytes"`
-	GlobalAliases types.List   `tfsdk:"global_aliases"`
+	ID                             types.String `tfsdk:"id"`
+	GlobalAlias                    types.String `tfsdk:"global_alias"`
+	Created                        types.String `tfsdk:"created"`
+	WebsiteAccess                  types.Bool   `tfsdk:"website_access"`
+	IndexDocument                  types.String `tfsdk:"index_document"`
+	ErrorDocument                  types.String `tfsdk:"error_document"`
+	MaxSize                        types.Int64  `tfsdk:"max_size"`
+	MaxObjects                     types.Int64  `tfsdk:"max_objects"`
+	Objects                        types.Int64  `tfsdk:"objects"`
+	Bytes                          types.Int64  `tfsdk:"bytes"`
+	UnfinishedUploads              types.Int64  `tfsdk:"unfinished_uploads"`
+	UnfinishedMultipartUploads     types.Int64  `tfsdk:"unfinished_multipart_uploads"`
+	UnfinishedMultipartUploadParts types.Int64  `tfsdk:"unfinished_multipart_upload_parts"`
+	UnfinishedMultipartUploadBytes types.Int64  `tfsdk:"unfinished_multipart_upload_bytes"`
+	GlobalAliases                  types.List   `tfsdk:"global_aliases"`
 }
 
 func NewBucketDataSource() datasource.DataSource {
