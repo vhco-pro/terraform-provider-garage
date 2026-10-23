@@ -116,7 +116,7 @@ func TestAccBucket_invalidAliasUppercase(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccBucketConfig("test", "My-Bucket-Invalid"),
+				Config:      testAccBucketConfig("test", "My-Bucket-Invalid"),
 				ExpectError: regexp.MustCompile(`.*`),
 			},
 		},
